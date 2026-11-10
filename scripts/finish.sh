@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One command after you have a Clocked API key:
 #   export CLOCKED_API_KEY=...   (or put it in .env)
-#   ./scripts/finish.sh
+#   bash scripts/finish.sh
 # It records live runs of the three sample packets into recorded/, renders
 # their Markdown memos, records the demo video and screenshots, and commits.
 set -euo pipefail

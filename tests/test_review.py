@@ -11,7 +11,16 @@ from vendorgate.review import Packet
 from vendorgate.runner import run_packet
 
 ROOT = Path(__file__).resolve().parent.parent
-PORT = 8765
+import socket
+
+
+def _free_port() -> int:
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+PORT = _free_port()
 
 
 def _serve():
