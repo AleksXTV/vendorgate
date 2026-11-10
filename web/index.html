@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VendorGate · vendor onboarding review on Clocked</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">▣</span> VendorGate <small>third-party onboarding review · built on Clocked</small></div>
+  <div id="mode" class="mode"></div>
+</header>
+<main>
+  <section id="left">
+    <div class="tabs" id="sampleTabs"></div>
+    <div class="vendorCard" id="vendorCard"></div>
+    <div class="docTabs" id="docTabs"></div>
+    <textarea id="docEditor" spellcheck="false"></textarea>
+    <div class="actions">
+      <button id="runLive" class="primary">Run live review</button>
+      <button id="openRecorded">Open recorded run</button>
+    </div>
+    <p class="hint">Live runs call 9 Clocked endpoints (12 requests). Recorded runs replay a saved live run, with its full API trace.</p>
+  </section>
+  <section id="right">
+    <div id="verdict" class="verdict empty">Pick a vendor packet and run a review.</div>
+    <div id="stages"></div>
+    <details id="traceBox"><summary>API trace</summary><div id="trace"></div></details>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
