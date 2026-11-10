@@ -1,1 +1,13 @@
-{"name": "Lumen Type Foundry", "service": "Commercial font licence for marketing materials", "annual_value_usd": 2400, "data": ["None - no personal or confidential data is shared"], "deployment": "Font files are downloaded by designers; a helper script installs them on design workstations", "region": "Global", "program": "Commercial (not a federal program)", "requested_by": "Brand team"}
+{
+ "name": "Lumen Type Foundry",
+ "service": "Commercial font licence for marketing materials",
+ "annual_value_usd": 2400,
+ "data": [
+  "None - no personal or confidential data is shared"
+ ],
+ "deployment": "Font files are downloaded by designers; a helper script installs them on design workstations",
+ "region": "Global",
+ "program": "Commercial (not a federal program)",
+ "requested_by": "Brand team",
+ "installs": "Only an optional helper script that copies font files into each designer's own font folder; no agent, service or server software"
+}

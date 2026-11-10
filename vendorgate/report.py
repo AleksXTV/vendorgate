@@ -33,10 +33,12 @@ def to_markdown(r: dict[str, Any]) -> str:
         for c in f["claims"]:
             out.append(f"- [{c['verdict'].replace('_', ' ')}] {c['claim']}")
         out.append("")
+    if m.get("rationale"):
+        out += ["## Findings behind the decision (generated, then checked by Verify)", m["rationale"], ""]
     if m.get("asks"):
         out += ["## What to ask the vendor", m["asks"], ""]
     if m.get("unsupported_lines"):
-        out += ["## Memo lines the self-check could not ground (check by hand)", *[f"- {x}" for x in m["unsupported_lines"]], ""]
+        out += ["## Generated statements Verify could not ground (check by hand)", *[f"- {x}" for x in m["unsupported_lines"]], ""]
     if m.get("vendor_email"):
         out += ["## Draft email to the vendor", "", m["vendor_email"], ""]
     u = r.get("usage", {})

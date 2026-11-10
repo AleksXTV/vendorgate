@@ -1,14 +1,62 @@
 [
- {"id": "P1-eu-personal-data", "title": "EU personal data: residency and transfers", "text": "Vendors that store or process personal data of customers or employees located in the European Union must keep that data in EU data centers, or document an approved transfer mechanism (Standard Contractual Clauses) for every non-EU location and subprocessor. A signed Data Processing Agreement is mandatory before go-live."},
- {"id": "P2-us-only-data", "title": "US government contracts: US-only data", "text": "Vendors supporting our US federal programs must store all program data in the continental United States and staff support exclusively with US persons. This applies only to vendors engaged under a federal program code."},
- {"id": "P3-breach-notification", "title": "Breach notification", "text": "Any vendor with access to personal or confidential data must contractually commit to notify us of a security incident affecting our data within 72 hours of discovery or sooner."},
- {"id": "P4-subprocessors", "title": "Subprocessors", "text": "Vendors processing personal or confidential data must disclose every subprocessor by name and location and give at least 30 days' notice before adding a new one, with a right for us to object."},
- {"id": "P5-liability", "title": "Liability cap for data processors", "text": "For vendors that process personal or confidential data, the liability cap for data protection breaches must be at least 2x the annual contract value, or uncapped. A general cap of 12 months' fees alone is not sufficient for data breaches."},
- {"id": "P6-auto-renewal", "title": "Auto-renewal and termination", "text": "Contracts that auto-renew must allow cancellation with no more than 60 days' notice before renewal. Termination for convenience with 90 days' notice is preferred for subscriptions over $50,000 a year."},
- {"id": "P7-endpoint-agents", "title": "Software installed on our infrastructure", "text": "Any vendor agent, connector, or script that runs on our servers or laptops must be reviewed by Security before installation. It must not disable or weaken security tooling (EDR, auditd, firewalls), must not read credentials or secrets outside its own configuration, and may only talk to documented vendor endpoints."},
- {"id": "P8-payment-cards", "title": "Payment card data", "text": "Vendors that store, process, or transmit cardholder data must provide a current PCI DSS Attestation of Compliance. This does not apply to vendors that never touch card numbers."},
- {"id": "P9-health-data", "title": "Protected health information", "text": "Vendors handling protected health information of US patients must sign a Business Associate Agreement under HIPAA before receiving any data."},
- {"id": "P10-ai-training", "title": "AI vendors: no training on our data", "text": "Vendors that use machine learning on our content must contractually commit not to use our data, prompts, or outputs to train or improve models shared with other customers, unless Legal approves an opt-in."},
- {"id": "P11-security-attestation", "title": "Independent security attestation", "text": "Vendors with access to confidential or personal data must provide a SOC 2 Type II report or ISO/IEC 27001 certificate issued within the last 12 months."},
- {"id": "P12-low-risk-fast-track", "title": "Low-risk fast track", "text": "Vendors that receive no personal or confidential data, install nothing on our systems, and cost under $10,000 a year may be approved by the budget owner without a full security review."}
+ {
+  "id": "P1-eu-personal-data",
+  "title": "EU personal data: residency and transfers",
+  "text": "Vendors that store or process personal data of customers or employees located in the European Union must keep that data in EU data centers, or document an approved transfer mechanism (Standard Contractual Clauses) for every non-EU location and subprocessor. A signed Data Processing Agreement is mandatory before go-live."
+ },
+ {
+  "id": "P2-us-only-data",
+  "title": "US government contracts: US-only data",
+  "text": "Vendors supporting our US federal programs must store all program data in the continental United States and staff support exclusively with US persons. This applies only to vendors engaged under a federal program code."
+ },
+ {
+  "id": "P3-breach-notification",
+  "title": "Breach notification",
+  "text": "Any vendor with access to personal or confidential data must contractually commit to notify us of a security incident affecting our data within 72 hours of discovery or sooner."
+ },
+ {
+  "id": "P4-subprocessors",
+  "title": "Subprocessors",
+  "text": "Vendors processing personal or confidential data must disclose every subprocessor by name and location and give at least 30 days' notice before adding a new one, with a right for us to object."
+ },
+ {
+  "id": "P5-liability",
+  "title": "Liability cap for data processors",
+  "text": "For vendors that process personal or confidential data, the liability cap for data protection breaches must be at least 2x the annual contract value, or uncapped. A general cap of 12 months' fees alone is not sufficient for data breaches."
+ },
+ {
+  "id": "P6-auto-renewal",
+  "title": "Auto-renewal and termination",
+  "text": "Contracts that auto-renew must allow cancellation with no more than 60 days' notice before renewal. Termination for convenience with 90 days' notice is preferred for subscriptions over $50,000 a year."
+ },
+ {
+  "id": "P7-endpoint-agents",
+  "title": "Software installed on our infrastructure",
+  "text": "Any vendor agent, connector, or script that runs on our servers or laptops must be reviewed by Security before installation. It must not disable or weaken security tooling (EDR, auditd, firewalls), must not read credentials or secrets outside its own configuration, and may only talk to documented vendor endpoints."
+ },
+ {
+  "id": "P8-payment-cards",
+  "title": "Payment card data",
+  "text": "Vendors that store, process, or transmit cardholder data must provide a current PCI DSS Attestation of Compliance. This does not apply to vendors that never touch card numbers."
+ },
+ {
+  "id": "P9-health-data",
+  "title": "Protected health information",
+  "text": "Vendors handling protected health information of US patients must sign a Business Associate Agreement under HIPAA before receiving any data."
+ },
+ {
+  "id": "P10-ai-training",
+  "title": "AI vendors: no training on our data",
+  "text": "Vendors that use machine learning on our content must contractually commit not to use our data, prompts, or outputs to train or improve models shared with other customers, unless Legal approves an opt-in."
+ },
+ {
+  "id": "P11-security-attestation",
+  "title": "Independent security attestation",
+  "text": "Vendors with access to confidential or personal data must provide a SOC 2 Type II report or ISO/IEC 27001 certificate issued within the last 12 months."
+ },
+ {
+  "id": "P12-low-risk-fast-track",
+  "title": "Low-risk fast track",
+  "text": "Vendors that receive no personal or confidential data, run no agent, service or server software on our systems, and cost under $10,000 a year may be approved by the budget owner without a full security review."
+ }
 ]

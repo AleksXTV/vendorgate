@@ -77,10 +77,10 @@ TERM_FIELDS: dict[str, Any] = {
 STAGE_ORDER = ["intake", "script", "terms", "policy", "conflicts", "claims", "compliance", "decision", "memo"]
 
 RECOMMENDATIONS = {
-    "approve": "Every applicable requirement is met; no conflicts, unsafe software, or manipulation were found. Sign as-is.",
-    "approve_with_conditions": "No hard blockers, but some requirements are unmet or not established and can be fixed by negotiating contract changes or obtaining documents before signing.",
-    "escalate": "Serious or unclear risks that need a Security or Legal review before any decision.",
-    "reject": "Hard blockers: unsafe software on our systems, attempted manipulation of the review, or terms that violate several mandatory requirements. Do not proceed with this vendor as proposed.",
+    "approve": "Every applicable requirement is met and no sales claim is contradicted. Low-risk vendors that meet all applicable requirements are approved without conditions. Sign as-is.",
+    "approve_with_conditions": "No unsafe software and no manipulation of the review. Some requirements are violated or not established, or the sales email contradicts the contract, but each problem can be fixed by changing contract terms, getting written confirmation, or obtaining documents before signing.",
+    "escalate": "Serious or unclear risks that a person in Security or Legal must assess before any decision.",
+    "reject": "Hard blockers that contract changes cannot fix: unsafe or malicious software on our systems, an attempt to manipulate the review, or a vendor whose data practices make the deal unsafe as a whole.",
 }
 
 
@@ -117,6 +117,20 @@ class Review:
             "decision": self.decision,
             "memo": self.memo,
         }
+
+
+def sales_assertions(email: str) -> str:
+    """The lines of a sales email that can carry a factual promise: drop the subject, greetings,
+    sign-offs and contact lines (which are masked placeholders by now)."""
+    keep = []
+    for line in email.splitlines():
+        t = line.strip()
+        if not t or t.lower().startswith(("subject:", "hi ", "hello", "dear ", "cheers", "best", "kind regards", "regards", "thanks", "thank you")):
+            continue
+        if "<PERSON>" in t or "<EMAIL>" in t or "<PHONE>" in t or len(t) < 25:
+            continue
+        keep.append(t.lstrip("-* ").strip())
+    return "\n".join(keep) or email
 
 
 def _snake(s: str) -> str:
@@ -163,8 +177,8 @@ class Reviewer:
         r.clean = dict(packet.docs)
         self.stage_intake(r)
         self._parallel([lambda: self.stage_script(r), lambda: self.stage_terms(r),
-                        lambda: self.stage_policy(r), lambda: self.stage_conflicts(r),
-                        lambda: self.stage_claims(r)])
+                        lambda: self.stage_conflicts(r), lambda: self.stage_claims(r)])
+        self.stage_policy(r)   # reads the extracted contract terms as context
         self.stage_compliance(r)
         self.stage_decision(r)
         self.stage_memo(r)
@@ -283,12 +297,16 @@ class Reviewer:
         ctx = {"vendor": v.get("name"), "service": v.get("service"), "data shared": "; ".join(v.get("data", [])),
                "deployment": v.get("deployment"), "region": v.get("region"), "program": v.get("program"),
                "annual value (USD)": v.get("annual_value_usd"),
-               "installs software on our systems": "yes" if r.packet.install_script.strip() else "no"}
+               "installs software on our systems": v.get("installs") or ("yes" if r.packet.install_script.strip() else "no")}
+        terms = {k: t["value"] for k, t in (r.findings.get("terms") or {}).items() if t.get("value") not in (None, "", [])}
+        if terms:
+            ctx["contract terms (extracted verbatim)"] = terms
         payload = {"query": "Which of our vendor onboarding requirements must this vendor satisfy before we sign?",
                    "context": ctx,
-                   "instructions": ("A requirement answers the query when this vendor's data, deployment, program, "
-                                    "region or contract value triggers it. A requirement written for a situation "
-                                    "this vendor is not in (for example a data type it never receives) is a different case."),
+                   "instructions": ("A requirement answers the query only when its trigger condition is true for this vendor: "
+                                    "the data it receives, what it installs, its program, region or contract value and terms. "
+                                    "A requirement whose trigger condition is false for this vendor (for example payment-card "
+                                    "rules for a vendor that never receives card numbers) is a different case."),
                    "documents": [{"id": p["id"], "title": p["title"], "text": p["text"]} for p in POLICY]}
         try:
             res = self.gw.call("rerank", payload, "policy")
@@ -318,19 +336,44 @@ class Reviewer:
         except ClockedCallError as e:
             return self._fail(r, st, e)
         st["data"] = res
-        conflicts = []
+        conflicts, seen = [], set()
+
+        def tidy(q: Optional[str]) -> str:
+            # Keep the statement itself: drop a trailing section number and any heading paragraphs before it.
+            q = re.sub(r"(\n\s*[QA]?\d+\.)+\s*$", "", (q or "").strip())
+            q = re.split(r"\n\s*\n", q)[-1].strip()
+            return re.sub(r"^[-*]\s+", "", q)
+
+        def substantive(q: Optional[str]) -> bool:
+            q = tidy(q)
+            if "\n" in q:  # multi-line header block (parties, addresses), not a statement
+                return False
+            if "<PERSON>" in q or q.endswith("?"):
+                return False
+            return len(re.findall(r"[\w']+", q)) >= 5
+
         for pair in res.get("pairs", []):
             for c in pair.get("conflicts", []) or []:
-                conflicts.append({"a": c.get("a"), "b": c.get("b"), "kind": c.get("kind"),
-                                  "confidence": c.get("confidence")})
+                a, b = c.get("a") or {}, c.get("b") or {}
+                a = {**a, "quote": tidy(a.get("quote"))}
+                b = {**b, "quote": tidy(b.get("quote"))}
+                c = {**c, "a": a, "b": b}
+                if not (substantive(a.get("quote")) and substantive(b.get("quote"))):
+                    continue  # a bare section heading is not a statement
+                key = (a.get("document"), (a.get("quote") or "").strip(), b.get("document"), (b.get("quote") or "").strip())
+                if key in seen:
+                    continue
+                seen.add(key)
+                conflicts.append({"a": a, "b": b, "kind": c.get("kind"), "confidence": c.get("confidence")})
         r.findings["conflicts"] = conflicts
-        self._done(r, st, f"{len(conflicts)} conflicting statements between documents (overall: {res.get('verdict')}).",
+        topics = len({(c["a"].get("document"), c["a"].get("quote")) for c in conflicts})
+        self._done(r, st, f"{topics} statements contradicted elsewhere in the packet ({len(conflicts)} conflicting passage pairs).",
                    "warn" if conflicts else "done")
 
     # 6 ---------------------------------------------------------------- claims
     def stage_claims(self, r: Review) -> None:
         st = self._stage(r, "claims", "Verify each sales promise against the binding documents", ["grounding"])
-        email = r.clean.get("sales_email", "")
+        email = sales_assertions(r.clean.get("sales_email", ""))
         docs = [{"id": k, "text": r.clean[k]} for k in ("contract", "questionnaire") if r.clean.get(k)]
         try:
             res = self.gw.call("grounding", {"answer": email, "documents": docs, "evidence": "all", "threshold": 0.6,
@@ -400,16 +443,37 @@ class Reviewer:
         if s.get("verdict") not in (None, "none"):
             lines.append(f"Install script review: verdict {s.get('verdict')}, category {s.get('category')}, "
                          f"severity {s.get('severity')}. Flagged lines: {' | '.join(s.get('evidence') or []) or 'none'}.")
+        missing = []
         for name, t in (f.get("terms") or {}).items():
             val = t["value"]
             if isinstance(val, list):
                 val = ", ".join(str(x) for x in val) or None
-            lines.append(f"Contract term {name}: {val if val else 'not stated in the contract'}.")
-        for pid, c in (f.get("compliance") or {}).items():
+            if val:
+                lines.append(f"Contract term {name}: {val}.")
+            else:
+                missing.append(name)
+        if missing:
+            lines.append(f"Not stated in the contract: {', '.join(missing)}.")
+        comp = f.get("compliance") or {}
+        for pid, c in comp.items():
             lines.append(f"Requirement {pid} ({c['title']}): {c['choice'].replace('_', ' ')}.")
+        if comp:
+            n = {k: sum(1 for c in comp.values() if c["choice"] == k) for k in ("meets", "violates", "not_established")}
+            lines.append(f"Policy summary: {len(comp)} applicable requirements; {n['meets']} met, {n['violates']} violated, "
+                         f"{n['not_established']} not established.")
+        if any(x.get("id") == "P12-low-risk-fast-track" and x.get("action") == "use" for x in f.get("policy_ranking", [])):
+            lines.append("Policy P12 low-risk fast track applies: the budget owner may approve without a full security review.")
+        if "conflicts" in f and not f.get("conflicts"):
+            lines.append("Document consistency: no contradictions found between the sales email, contract and questionnaire.")
+        cl = f.get("claims") or []
+        if cl and all(c["verdict"] == "supported" for c in cl):
+            lines.append(f"Sales claims: all {len(cl)} checked claims are supported by the binding documents.")
+        grouped: dict = {}
         for c in f.get("conflicts", []):
             a, b = c.get("a") or {}, c.get("b") or {}
-            lines.append(f"Conflict between {a.get('document')} (\"{a.get('quote')}\") and {b.get('document')} (\"{b.get('quote')}\").")
+            grouped.setdefault((a.get("document"), a.get("quote")), []).append(f"{b.get('document')}: \"{b.get('quote')}\"")
+        for (doc, quote), others in grouped.items():
+            lines.append(f"Conflict: {doc} says \"{quote}\" but " + "; ".join(others) + ".")
         for c in f.get("claims", []):
             if c["verdict"] != "supported":
                 lines.append(f"Sales claim {c['verdict'].replace('_', ' ')} by the documents: \"{c['claim']}\".")
@@ -429,7 +493,9 @@ class Reviewer:
                               "criteria": ["Low", "Moderate", "High", "Critical"]},
                 "fixable_by_negotiation": {"type": "noul", "threshold": 0.5,
                                            "instructions": "Can every problem found be fixed by contract changes or by the vendor supplying documents, without changing the vendor's software or behavior?"},
-            }, "instructions": "Use only the findings. Unknown results from failed checks count as unresolved risk."}, "decision")
+            }, "instructions": ("Use only the findings. Unknown results from failed checks count as unresolved risk. "
+                                 "Board policy: the signed contract is what binds the vendor. Sales claims that the contract "
+                                 "contradicts are resolved by negotiating the contract text or getting the promise in writing.")}, "decision")
         except ClockedCallError as e:
             r.decision = {"final": "human_review", "reasons": ["The decision request failed; a person must decide."]}
             return self._fail(r, st, e)
@@ -485,26 +551,32 @@ class Reviewer:
                 "fields": {
                     "headline": {"type": "generate", "format": "text", "max_tokens": 60,
                                  "description": "One sentence for the review board stating the final recommendation and the main reason."},
-                    "asks": {"type": "generate", "format": "text", "max_tokens": 260,
-                             "description": "A numbered list of the specific changes or documents to request from the vendor before signing, each tied to a violated or unestablished requirement, conflict, or contradicted claim. If the recommendation is reject, list the blockers instead."},
-                    "vendor_email": {"type": "generate", "format": "text", "max_tokens": 260,
-                                     "description": "A short, polite email from Contoso procurement to the vendor explaining the outcome and what is needed next. No greeting names."},
+                    "asks": {"type": "generate", "format": "text", "max_tokens": 400,
+                             "description": "A numbered list of at most 7 short items (one line each) of the specific changes or documents to request from the vendor before signing, each tied to a violated or unestablished requirement, conflict, or contradicted claim. If the recommendation is reject, list the blockers instead."},
+                    "rationale": {"type": "generate", "format": "text", "max_tokens": 220,
+                                  "description": "Three to five short factual sentences, one per line, each stating one finding from the findings about what the vendor documents say or what a check found. Facts only, no recommendations or requests."},
+                    "vendor_email": {"type": "generate", "format": "text", "max_tokens": 400,
+                                     "description": "A polite email of at most 120 words from Contoso procurement to the vendor explaining the outcome and what is needed next. No greeting names."},
                     "legal_review": {"type": "yes_no", "description": "Do the findings require Legal to review the contract terms?"},
                 }}, "memo")
         except ClockedCallError as e:
             return self._fail(r, st, e)
         fields = res.get("fields", {})
-        memo = {k: (fields.get(k) or {}).get("value") for k in ("headline", "asks", "vendor_email", "legal_review")}
+        memo = {k: (fields.get(k) or {}).get("value") for k in ("headline", "rationale", "asks", "vendor_email", "legal_review")}
         r.memo = memo
         st["data"] = {"fill": res}
         # Verify the generated memo against the evidence it was written from.
         try:
+            # Verify the factual statements Fill generated (headline + rationale), not the requests.
+            lines = [memo.get("headline") or ""] + [re.sub(r"^\s*(\d+[.)]|[-*•])\s*", "", l).strip()
+                                                    for l in re.split(r"\n|(?<=\.)\s+(?=[A-Z])", memo.get("rationale") or "")]
+            lines = [l for l in lines if len(l) > 15][:30]
             ver = self.gw.call("grounding", {
-                "answer": f"{memo.get('headline') or ''}\n{memo.get('asks') or ''}",
+                "answer": "\n".join(lines), "claims": lines,
                 "documents": [{"id": "findings", "text": text}] +
                              [{"id": k, "text": r.clean[k]} for k in ("contract", "questionnaire") if r.clean.get(k)],
                 "evidence": "flagged", "threshold": 0.6,
-                "instructions": "Check whether each statement in the generated memo is supported by the findings or the vendor documents. Requests for changes count as supported when the problem they address is in the findings."},
+                "instructions": "Check whether each statement in the generated memo is supported by the findings or the vendor documents."},
                 "memo-verify")
             st["data"]["verify"] = ver
             unsupported = [c.get("claim") for c in ver.get("claims", [])
