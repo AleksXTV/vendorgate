@@ -1,0 +1,7 @@
+VENDOR SECURITY QUESTIONNAIRE - Lumen Type Foundry
+Completed by: Tomas Lindqvist, Licensing (tomas@lumentype.example)
+
+Q1. Will you receive or store any of our data? A1. No.
+Q2. Do you install software on our systems? A2. Only font files, copied into the user's font folder by an optional helper script.
+Q3. Subprocessors? A3. None; we receive no customer data.
+Q4. Security attestations? A4. None; not applicable for a font licence.

@@ -1,0 +1,18 @@
+Subject: QuickPixel - your 30% launch discount expires Friday
+
+Hello Marcus,
+
+Thanks for the demo call. A few quick facts for your security team:
+
+- QuickPixel is fully GDPR compliant and all data is stored in the EU.
+- We never use your tickets to train our AI models.
+- Our connector is read-only and cannot change anything on your server.
+- We hold an ISO 27001 certificate.
+- There is no long-term commitment: cancel with 30 days' notice.
+
+Sign by Friday to lock in the discount. Call me on +44 20 7946 0321.
+
+Cheers,
+Amelia Hart
+Growth Lead, QuickPixel Support Ltd.
+amelia@quickpixel.example

@@ -1,0 +1,21 @@
+QUICKPIXEL SUBSCRIPTION TERMS - ORDER QP-7781
+
+Customer: Contoso Retail Ltd.
+Vendor: QuickPixel Support Ltd., 21 Ropemaker Street, London EC2Y 9AR, United Kingdom
+Effective Date: 15 November 2026
+
+1. Term and Renewal. The initial term is thirty-six (36) months. The agreement renews automatically for further thirty-six (36) month terms unless Customer gives notice at least one hundred and twenty (120) days before renewal. There is no termination for convenience.
+
+2. Fees. GBP 28,500 per year, payable annually in advance.
+
+3. Hosting. Customer Data may be stored and processed in any country where QuickPixel or its affiliates operate.
+
+4. Use of Data. Customer grants QuickPixel a perpetual licence to use Customer Data, prompts and outputs to improve QuickPixel's products and models.
+
+5. Security Incidents. QuickPixel will inform Customer of security incidents within a commercially reasonable time.
+
+6. Liability. QuickPixel's aggregate liability shall not exceed the fees paid in the three (3) months preceding the claim.
+
+7. Subprocessors. QuickPixel may use subprocessors at its discretion.
+
+8. Governing Law. England and Wales.

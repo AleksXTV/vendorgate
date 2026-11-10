@@ -1,0 +1,25 @@
+MASTER SUBSCRIPTION AGREEMENT - ORDER FORM NW-2026-114
+
+Customer: Contoso Retail Ltd. ("Customer")
+Provider: Northwind Insights GmbH, Friedrichstrasse 68, 10117 Berlin, Germany ("Provider")
+Effective Date: 1 December 2026
+
+1. Term. The initial subscription term is twelve (12) months from the Effective Date. The subscription renews automatically for successive twelve (12) month terms unless either party gives written notice of non-renewal at least ninety (90) days before the end of the then-current term.
+
+2. Fees. Customer will pay EUR 78,000 per year, invoiced annually in advance.
+
+3. Data Location. Customer Data is hosted in Provider's Frankfurt, Germany data center. Backups and support tooling may be processed by Provider's subprocessors in the United States as listed in Schedule 2.
+
+4. Subprocessors. Provider may engage subprocessors and will notify Customer of new subprocessors by updating Schedule 2 fourteen (14) days in advance. Schedule 2 currently lists: Amazon Web Services EMEA SARL (backups, United States), Zendesk Inc. (support ticketing, United States).
+
+5. Security Incidents. Provider will notify Customer of a Security Incident affecting Customer Data without undue delay and in any event within seventy-two (72) hours of becoming aware of it.
+
+6. Data Processing Agreement. The parties' Data Processing Agreement, including the EU Standard Contractual Clauses (Module 2) for transfers to the United States, is incorporated by reference.
+
+7. Limitation of Liability. Each party's total liability under this Agreement, including for breach of data protection obligations, is limited to the fees paid by Customer in the twelve (12) months preceding the claim.
+
+8. Model Training. Provider does not use Customer Data to train machine-learning models offered to other customers.
+
+9. Governing Law. This Agreement is governed by the laws of Germany.
+
+Provider contact for notices: Jonas Weber, jonas.weber@northwind-insights.example

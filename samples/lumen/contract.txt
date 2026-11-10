@@ -1,0 +1,12 @@
+LUMEN TYPE FOUNDRY - FONT LICENCE AGREEMENT L-55120
+
+Licensee: Contoso Retail Ltd.
+Licensor: Lumen Type Foundry AB, Sveavagen 44, 111 34 Stockholm, Sweden
+Effective Date: 1 December 2026
+
+1. Licence. Desktop and web use of the Lumen Sans family by up to 50 named users.
+2. Term. Twelve (12) months, renewing annually unless either party gives thirty (30) days' notice before the renewal date.
+3. Fees. USD 2,400 per year.
+4. Data. Licensor does not receive, host, or process Licensee data. Web font files are self-hosted by Licensee.
+5. Liability. Licensor's liability is limited to the fees paid in the preceding twelve (12) months.
+6. Governing Law. Sweden.

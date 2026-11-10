@@ -1,0 +1,20 @@
+VENDOR SECURITY QUESTIONNAIRE - Northwind Insights GmbH
+Completed by: Lena Hoffmann, Head of Security (lena.hoffmann@northwind-insights.example)
+
+Q1. Where is customer data stored?
+A1. Primary storage is in Frankfurt (AWS eu-central-1). Encrypted backups are replicated to AWS us-east-1.
+
+Q2. Do you use subprocessors? List them.
+A2. Yes: Amazon Web Services (hosting and backups) and Zendesk (support tickets).
+
+Q3. What independent security attestations do you hold?
+A3. SOC 2 Type II, report period ending 31 January 2026, report issued March 2026.
+
+Q4. How quickly do you notify customers of a security incident?
+A4. Within 72 hours of confirmation.
+
+Q5. Do you use customer data to train AI models?
+A5. No.
+
+Q6. What does your on-premise agent do?
+A6. The nw-forwarder agent tails application logs from /var/log/contoso-app and forwards them over HTTPS to ingest.northwind-insights.example. It runs as an unprivileged system user.
