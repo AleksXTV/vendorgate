@@ -102,7 +102,7 @@ Bring your own packet: edit any document in the left panel, or add a folder unde
 
 ## Sample packets (fictional)
 
-| Packet | What's in it | Expected outcome |
+| Packet | What's in it | What a careful reviewer should conclude |
 |---|---|---|
 | `samples/quickpixel` | AI support tool with a prompt injection in its questionnaire, an install script that disables auditd and uploads secrets, and one-sided terms | Reject |
 | `samples/northwind` | Credible EU analytics SaaS. The sales email contradicts the contract on data location, subprocessors and cancellation; 90-day renewal notice; low liability cap | Approve with conditions |
