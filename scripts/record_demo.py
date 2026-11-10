@@ -44,6 +44,11 @@ def main() -> int:
             ctx = b.new_context(viewport={"width": 1440, "height": 900}, record_video_dir=str(RAW),
                                 record_video_size={"width": 1440, "height": 900})
             pg = ctx.new_page()
+            def shot(name: str) -> None:  # screenshots without the video caption
+                pg.evaluate("() => { const c = document.getElementById('cap'); if (c) c.style.visibility = 'hidden'; }")
+                pg.screenshot(path=str(SHOTS / name))
+                pg.evaluate("() => { const c = document.getElementById('cap'); if (c) c.style.visibility = 'visible'; }")
+            done = "document.querySelector('#verdict h2') !== null && !document.querySelector('#runLive').disabled"
             cap = lambda t, wait=3.2: (pg.evaluate(CAPTION_JS, t), pg.wait_for_timeout(int(wait * 1000)))
             pg.goto(f"http://127.0.0.1:{PORT}/?sample=quickpixel")
             pg.wait_for_selector("#sampleTabs button")
@@ -56,9 +61,9 @@ def main() -> int:
             cap("…and its install script does more than install.", 3)
             pg.click("#runLive")
             cap("Running a live review: 12 requests to the Clocked API.", 1)
-            pg.wait_for_function("document.querySelector('#verdict h2') !== null", timeout=240000)
+            pg.wait_for_function(done, timeout=240000)
             cap("Verdict: rejected. Hard guardrails in code mean a model can make the decision stricter, never looser.", 4.5)
-            pg.screenshot(path=str(SHOTS / "screenshot-quickpixel.png"))
+            shot("screenshot-quickpixel.png")
             for i, text in [
                 (0, "Guard caught the injection and quarantined it; Protect replaced names, emails and phones before any later step."),
                 (1, "Inspect flagged the lines that disable auditd, collect secrets and upload them, without executing anything."),
@@ -71,9 +76,9 @@ def main() -> int:
             pg.click("#sampleTabs button[data-id=northwind]")
             cap("A second vendor: a real-looking SaaS deal with subtler problems.", 3)
             pg.click("#runLive")
-            pg.wait_for_function("document.querySelector('#verdict h2') !== null", timeout=240000)
+            pg.wait_for_function(done, timeout=240000)
             cap("No blockers, but conditions: the sales email and the contract disagree.", 4)
-            pg.screenshot(path=str(SHOTS / "screenshot-northwind.png"))
+            shot("screenshot-northwind.png")
             for i, text in [(4, "Compare found statements that conflict across the vendor's own documents."),
                             (5, "Verify checked each sales promise against the binding contract and questionnaire."),
                             (2, "Extract pulled every key term verbatim, with its exact position in the contract."),
@@ -82,12 +87,12 @@ def main() -> int:
                 el = pg.locator(f"#stages details.stage >> nth={i}")
                 el.evaluate("e => e.open = true"); el.scroll_into_view_if_needed()
                 cap(text, 4.5)
-            pg.screenshot(path=str(SHOTS / "screenshot-memo.png"), full_page=False)
+            shot("screenshot-memo.png")
             pg.evaluate("window.scrollTo(0,0)")
             pg.click("#sampleTabs button[data-id=lumen]")
             pg.click("#runLive")
-            pg.wait_for_function("document.querySelector('#verdict h2') !== null", timeout=240000)
-            cap("And a low-risk font licence goes straight through.", 3.5)
+            pg.wait_for_function(done, timeout=240000)
+            cap("And a low-risk font licence is approved: every applicable requirement met, no sign-off needed.", 4)
             pg.click("#traceBox summary"); pg.locator("#traceBox").scroll_into_view_if_needed()
             cap("Every request, response, latency and credit cost is in the trace. VendorGate: decide with evidence.", 5)
             ctx.close(); b.close()

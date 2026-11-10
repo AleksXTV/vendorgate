@@ -26,7 +26,7 @@ function pick(id) {
   cur = structuredClone(samples.find(s => s.id === id));
   document.querySelectorAll("#sampleTabs button").forEach(b => b.classList.toggle("on", b.dataset.id === id));
   const v = cur.vendor;
-  $("#vendorCard").innerHTML = `<b>${esc(v.name)}</b> · ${esc(v.service)}<div class="row">Data: ${esc((v.data||[]).join("; "))}</div><div class="row">Deployment: ${esc(v.deployment)} · ~$${esc(v.annual_value_usd)}/yr</div>`;
+  $("#vendorCard").innerHTML = `<b>${esc(v.name)}</b> · ${esc(v.service)}<div class="row">Data: ${esc((v.data||[]).join("; "))}</div><div class="row">Deployment: ${esc(v.deployment)} · about USD ${esc(Number(v.annual_value_usd).toLocaleString('en-US'))} a year</div>`;
   $("#openRecorded").disabled = !cur.recorded;
   showDoc("sales_email");
 }

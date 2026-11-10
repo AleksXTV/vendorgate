@@ -49,8 +49,8 @@ vendor packet ──► 1 Intake  (Pipeline: Guard + Protect, per document)
 | 6 | **Verify** (`/grounding`) | Checks each sales promise against the binding documents | Each claim is marked supported, contradicted or not stated, with evidence. Contradicted promises go into the memo's asks |
 | 7 | **Decide** (`/decide`, choice per requirement) | Rules on each applicable requirement as meets, violates or not established, with probabilities | Produces the compliance table. Any violation blocks a plain approve |
 | 8 | **Decide** (`/decide`, choice + score + yes/no) | Gives a recommendation, a risk tier and whether the problems can be fixed by negotiation | Sets the verdict, then deterministic guardrails apply (below) |
-| 9 | **Fill** (`/fill`, `generate` + `yes_no`) | Writes the review-board headline, the numbered asks to the vendor and the vendor email, and flags whether Legal review is needed | These become the memo shown in the app and exported as Markdown |
-| 9 | **Verify** (`/grounding`) on the generated memo | Checks the memo against the findings and the documents | Lines that aren't supported are highlighted as **check by hand** |
+| 9 | **Fill** (`/fill`, `generate` + `yes_no`) | Writes the review-board headline, a facts-only rationale, the numbered asks to the vendor and the vendor email, and flags whether Legal review is needed | These become the memo shown in the app and exported as Markdown |
+| 9 | **Verify** (`/grounding`) on the generated memo | Checks the headline and the generated rationale against the findings and the documents | Lines that aren't supported are highlighted as **check by hand** |
 
 All nine capabilities are used, plus Pipeline. Each one's output either changes
 what a later step sees or decides something the user sees.
@@ -102,11 +102,11 @@ Bring your own packet: edit any document in the left panel, or add a folder unde
 
 ## Sample packets (fictional)
 
-| Packet | What's in it | What a careful reviewer should conclude |
-|---|---|---|
-| `samples/quickpixel` | AI support tool with a prompt injection in its questionnaire, an install script that disables auditd and uploads secrets, and one-sided terms | Reject |
-| `samples/northwind` | Credible EU analytics SaaS. The sales email contradicts the contract on data location, subprocessors and cancellation; 90-day renewal notice; low liability cap | Approve with conditions |
-| `samples/lumen` | Font licence: no data, a benign per-user install script | Approve (low-risk fast track) |
+| Packet | What's in it | What a careful reviewer should conclude | VendorGate, live run (`recorded/`) |
+|---|---|---|---|
+| `samples/quickpixel` | AI support tool with a prompt injection in its questionnaire, an install script that disables auditd and uploads secrets, and one-sided terms | Reject | Reject · Critical · injection quarantined, script judged malicious |
+| `samples/northwind` | Credible EU analytics SaaS. The sales email contradicts the contract on data location, subprocessors and cancellation; 90-day renewal notice; low liability cap | Approve with conditions | Approve with conditions · High · 43% confidence, so human sign-off required · 4 contradicted sales claims |
+| `samples/lumen` | Font licence: no data, a benign per-user install script | Approve (low-risk fast track) | Approve · Low · 99% |
 
 All companies, people, emails, phone numbers and IP addresses in the samples are
 invented. The phone numbers use fictional ranges, the domains use `.example`, and
